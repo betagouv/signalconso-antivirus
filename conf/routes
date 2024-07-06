@@ -1,0 +1,2 @@
+
+GET        /api/test        controllers.AntivirusController.test()
