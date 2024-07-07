@@ -6,6 +6,7 @@ import java.time.OffsetDateTime
 
 case class FileData(
     id: FileId,
+    externalId: String,
     creationDate: OffsetDateTime,
     filename: String,
     storageFilename: String,

@@ -1,5 +1,6 @@
 package repositories
 
+import models.FileData
 import models.FileId
 import repositories.PostgresProfile.api._
 import slick.basic.DatabaseConfig
@@ -17,6 +18,9 @@ class FileDataRepository(val dbConfig: DatabaseConfig[JdbcProfile])(implicit
   val table: TableQuery[FileDataTable] = FileDataTable.table
 
   import dbConfig._
+
+  def create(fileData: FileData): Future[FileData] =
+    db.run(table += fileData).map(_ => fileData)
 
   override def setAvOutput(fileId: FileId, output: String): Future[Int] = db
     .run(

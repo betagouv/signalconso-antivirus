@@ -1,10 +1,10 @@
 package controllers.error
 
+import controllers.AntivirusController.FileKey
+import controllers.AntivirusController.MaxFileNameLength
+
 sealed trait AppError extends Throwable with Product with Serializable
 
-case class InseeTokenGenerationError(message: String)          extends AppError
-case class InseeEtablissementError(message: String)            extends Exception(message) with AppError
-case class EtablissementJobAleadyRunningError(message: String) extends Exception(message) with AppError
 sealed trait ApiError extends AppError {
   val `type`: String
   val title: String
@@ -32,33 +32,17 @@ object ApiError {
     override val title: String   = "Malformed request body"
     override val details: String = s"Le corps de la requête ne correspond pas à ce qui est attendu par l'API."
   }
-
-  final case class MalformedSiret(InvalidSiret: String) extends BadRequestError {
-    override val `type`: String = "SC-0003"
-    override val title: String  = "Malformed SIRET"
-    override val details: String =
-      s"Malformed SIRET : $InvalidSiret"
+  final case class MalformedFileKey(value: String) extends BadRequestError {
+    override val `type`: String  = "SC-0003"
+    override val title: String   = s"Malformed filekey, expecting $FileKey"
+    override val details: String = s"Malformed filekey, expecting $FileKey"
   }
 
-  final case class MalformedSiren(InvalidSIREN: String) extends BadRequestError {
-    override val `type`: String = "SC-0007"
-    override val title: String  = "Malformed SIREN"
-    override val details: String =
-      s"Malformed SIREN : $InvalidSIREN"
-  }
-
-  final case class MalformedId(id: String) extends BadRequestError {
+  final case class FileNameTooLong(name: String) extends BadRequestError {
     override val `type`: String = "SC-0004"
-    override val title: String  = "Malformed id"
+    override val title: String  = "FileNameTooLong"
     override val details: String =
-      s"Malformed id : $id"
-  }
-
-  final case class MalformedValue(value: String, expectedValidType: String) extends BadRequestError {
-    override val `type`: String = "SC-0005"
-    override val title: String  = s"Malformed value, $value is not a valid value, expecting valid $expectedValidType"
-    override val details: String =
-      s"La valeur $value ne correspond pas à ce qui est attendu par l'API. Merci de renseigner une valeur valide pour $expectedValidType"
+      s"FileName too long :$name , expecting less than $MaxFileNameLength"
   }
 
   final case object InvalidToken extends UnauthorizedError {

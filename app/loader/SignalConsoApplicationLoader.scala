@@ -16,6 +16,7 @@ import play.filters.HttpFiltersComponents
 import pureconfig.ConfigSource
 import pureconfig.generic.auto._
 import repositories.FileDataRepository
+import service.AntivirusService
 import service.S3Service
 import service.S3ServiceInterface
 import slick.basic.DatabaseConfig
@@ -43,7 +44,7 @@ class SignalConsoComponents(
 
   val logger: Logger = Logger(this.getClass)
 
-  println(s"------------------ token= ${Token.hash(Token.ClearToken("test"))} ------------------")
+  println(s"------------------ token= ${Token.hash(Token.ClearToken("test")).value} ------------------")
 
   val applicationConfiguration: ApplicationConfiguration = ConfigSource.default.loadOrThrow[ApplicationConfiguration]
 
@@ -55,6 +56,7 @@ class SignalConsoComponents(
       applicationConfiguration.flyway.user,
       applicationConfiguration.flyway.password
     )
+    .schemas("signalconso_antivirus")
     // DATA_LOSS / DESTRUCTIVE / BE AWARE ---- Keep to "false"
     // Be careful when enabling this as it removes the safety net that ensures Flyway does not migrate the wrong database in case of a configuration mistake!
     // This is useful for initial Flyway production deployments on projects with an existing DB.
@@ -84,8 +86,15 @@ class SignalConsoComponents(
     "antivirus-scan-actor"
   )
 
+  val antivirusService = new AntivirusService(antivirusScanActor, s3Service, fileDataRepository)
+
   val antivirusController =
-    new AntivirusController(controllerComponents, applicationConfiguration.app.apiAuthenticationToken)
+    new AntivirusController(
+      controllerComponents,
+      applicationConfiguration.app.apiAuthenticationToken,
+      applicationConfiguration.app.tmpDirectory,
+      antivirusService
+    )
 
   io.sentry.Sentry.captureException(
     new Exception("This is a test Alert, used to check that Sentry alert are still active on each new deployments.")
