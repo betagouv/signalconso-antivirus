@@ -7,7 +7,6 @@ import controllers.error.ApiError.UnknownExternalId
 import models.FileData
 import models.FileId
 import org.apache.pekko.actor.typed.ActorRef
-import org.apache.pekko.stream.Materializer
 import play.api.Logger
 import repositories.FileDataRepositoryInterface
 
@@ -18,12 +17,12 @@ import scala.concurrent.Future
 class AntivirusService(
     antivirusScanActor: ActorRef[AntivirusScanActor.ScanCommand],
     fileDataRepository: FileDataRepositoryInterface
-)(implicit val executionContext: ExecutionContext, mat: Materializer) {
+)(implicit val executionContext: ExecutionContext) {
   val logger = Logger(this.getClass)
 
-  def scanAndSave(externalId: String, filename: String, file: java.io.File): Future[Unit] =
+  def scanAndSave(externalId: String, filename: String, file: java.io.File): Future[FileData] =
     for {
-      reportFile <- fileDataRepository.create(
+      fileData <- fileDataRepository.create(
         FileData(
           FileId.generateId(),
           externalId = externalId,
@@ -33,16 +32,15 @@ class AntivirusService(
           avOutput = None
         )
       )
-      _ = logger.debug(s"Uploaded file ${reportFile.id} to S3")
+      _ = logger.debug(s"Uploaded file ${fileData.id} to S3")
     } yield {
-      antivirusScanActor ! AntivirusScanActor.ScanFromFile(reportFile, file)
-      reportFile
+      antivirusScanActor ! AntivirusScanActor.ScanFromFile(fileData, file)
+      fileData
     }
 
   def reScanFile(fileExternalIds: List[String]) = fileDataRepository
     .getByExternalId(fileExternalIds)
     .map { files =>
-      println(s"------------------ files = ${files} ------------------")
       files
         .filter(f => f.scanResult.isEmpty || f.scanResult.contains(AntivirusScanExitCode.ErrorOccured.value))
         .map(file => antivirusScanActor ! AntivirusScanActor.ScanFromBucket(file))
