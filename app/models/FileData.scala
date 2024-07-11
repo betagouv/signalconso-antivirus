@@ -9,7 +9,7 @@ case class FileData(
     externalId: String,
     creationDate: OffsetDateTime,
     filename: String,
-    storageFilename: String,
+    scanResult: Option[Int],
     avOutput: Option[String]
 )
 object FileData {

@@ -24,6 +24,7 @@ object AppErrorTransformer {
   def handleError[R <: Request[_]](request: R, err: Throwable, maybeUserId: Option[UUID] = None): Result =
     err match {
       case appError: ApiError =>
+        println(s"------------------  = $appError ------------------")
         handleAppError(request, appError, maybeUserId)
       case err =>
         logger.error(formatMessage(request, maybeUserId, "Unexpected error occured"), err)

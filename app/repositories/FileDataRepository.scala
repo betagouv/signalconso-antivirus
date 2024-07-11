@@ -30,12 +30,18 @@ class FileDataRepository(val dbConfig: DatabaseConfig[JdbcProfile])(implicit
         .update(Some(output))
     )
 
-  override def removeStorageFileName(fileId: FileId): Future[Int] = db
+  override def getByExternalId(ids: List[String]): Future[List[FileData]] = db.run {
+    table
+      .filter(_.externalId inSet ids)
+      .to[List]
+      .result
+  }
+
+  override def setScanResult(fileId: FileId, result: Option[Int], output: String): Future[Int] = db
     .run(
       table
         .filter(_.id === fileId)
-        .map(_.storageFilename)
-        .update("")
+        .map(file => (file.avOutput, file.scanResult))
+        .update((Some(output), result))
     )
-
 }

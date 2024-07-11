@@ -30,7 +30,7 @@ object ApiError {
   final case object MalformedBody extends BadRequestError {
     override val `type`: String  = "SC-0002"
     override val title: String   = "Malformed request body"
-    override val details: String = s"Le corps de la requête ne correspond pas à ce qui est attendu par l'API."
+    override val details: String = "Le corps de la requête ne correspond pas à ce qui est attendu par l'API."
   }
   final case class MalformedFileKey(value: String) extends BadRequestError {
     override val `type`: String  = "SC-0003"
@@ -45,10 +45,23 @@ object ApiError {
       s"FileName too long :$name , expecting less than $MaxFileNameLength"
   }
 
+  final case object MissingExternalId extends BadRequestError {
+    override val `type`: String  = "SC-0005"
+    override val title: String   = "Expecting externalId key"
+    override val details: String = "Expecting externalId key"
+  }
+
   final case object InvalidToken extends UnauthorizedError {
     override val `type`: String = "SC-0006"
-    override val title: String  = s"Token is malformed"
+    override val title: String  = "Token is malformed"
     override val details: String =
-      s"Token is malformed or not found"
+      "Token is malformed or not found"
   }
+
+  final case class UnknownExternalId(externalFileId: String) extends BadRequestError {
+    override val `type`: String  = "SC-0007"
+    override val title: String   = s"No file found for $externalFileId"
+    override val details: String = s"No file found for $externalFileId"
+  }
+
 }

@@ -11,6 +11,8 @@ trait FileDataRepositoryInterface {
 
   def setAvOutput(fileId: FileId, output: String): Future[Int]
 
-  def removeStorageFileName(fileId: FileId): Future[Int]
+  def setScanResult(fileId: FileId, result: Option[Int], output: String): Future[Int]
+
+  def getByExternalId(ids: List[String]): Future[List[FileData]]
 
 }

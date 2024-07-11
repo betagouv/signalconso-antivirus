@@ -44,8 +44,6 @@ class SignalConsoComponents(
 
   val logger: Logger = Logger(this.getClass)
 
-  println(s"------------------ token= ${Token.hash(Token.ClearToken("test")).value} ------------------")
-
   val applicationConfiguration: ApplicationConfiguration = ConfigSource.default.loadOrThrow[ApplicationConfiguration]
 
   // Run database migration scripts
@@ -64,8 +62,6 @@ class SignalConsoComponents(
     .baselineOnMigrate(applicationConfiguration.flyway.baselineOnMigrate)
     .load()
     .migrate()
-
-  def signalConsoConfiguration: SignalConsoConfiguration = applicationConfiguration.app
 
   //  Repositories
 
@@ -86,7 +82,7 @@ class SignalConsoComponents(
     "antivirus-scan-actor"
   )
 
-  val antivirusService = new AntivirusService(antivirusScanActor, s3Service, fileDataRepository)
+  val antivirusService = new AntivirusService(antivirusScanActor, fileDataRepository)
 
   val antivirusController =
     new AntivirusController(

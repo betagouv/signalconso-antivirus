@@ -1,13 +1,9 @@
 package controllers
 
-import cats.implicits.catsSyntaxOption
 import controllers.error.ApiError.InvalidToken
 import de.mkammerer.argon2.Argon2Factory
 import org.apache.pekko.util.ByteString
 import play.api.mvc.Request
-
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
 
 object Token {
   private val argon = Argon2Factory.create
@@ -31,10 +27,10 @@ object Token {
   private def bytes(token: ClearToken): Array[Byte] =
     token.value.getBytes(ByteString.UTF_8)
 
-  def validateToken(request: Request[_], token: HashedToken)(implicit e: ExecutionContext): Future[Unit] =
+  def validateToken(request: Request[_], token: HashedToken) =
     for {
-      clearToken <- request.headers.get("X-Api-Key").map(ClearToken).liftTo[Future](InvalidToken)
-      _          <- if (Token.matches(clearToken, token)) Future.unit else Future.failed(InvalidToken)
-    } yield ()
+      clearToken <- request.headers.get("X-Api-Key").map(ClearToken).toRight(InvalidToken)
+      res        <- Either.cond(Token.matches(clearToken, token), request, InvalidToken)
+    } yield res
 
 }

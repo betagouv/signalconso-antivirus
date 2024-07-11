@@ -17,23 +17,30 @@ class FileDataTable(tag: Tag)
   def externalId      = column[String]("external_id")
   def creationDate    = column[OffsetDateTime]("creation_date")
   def filename        = column[String]("filename")
-  def storageFilename = column[String]("storage_filename")
+  def scanResult      = column[Option[Int]]("scan_result")
   def avOutput        = column[Option[String]]("av_output")
 
-  type FileDataTuple = (FileId, String, OffsetDateTime, String, String, Option[String])
+  type FileDataTuple = (FileId, String, OffsetDateTime, String, Option[Int], Option[String])
 
   def constructFile: FileDataTuple => FileData = {
-    case (id, externalId, creationDate, filename, storageFilename, avOutput) =>
-      FileData(id, externalId, creationDate, filename, storageFilename, avOutput)
+    case (id, externalId, creationDate, filename, scanResult, avOutput) =>
+      FileData(id, externalId, creationDate, filename, scanResult, avOutput)
   }
 
   def extractFile: PartialFunction[FileData, FileDataTuple] = {
-    case FileData(id, externalId, creationDate, filename, storageFilename, avOutput) =>
-      (id, externalId, creationDate, filename, storageFilename, avOutput)
+    case FileData(id, externalId, creationDate, filename, scanResult, avOutput) =>
+      (id, externalId, creationDate, filename, scanResult, avOutput)
   }
 
   def * =
-    (id, externalId, creationDate, filename, storageFilename, avOutput) <> (constructFile, extractFile.lift)
+    (
+      id,
+      externalId,
+      creationDate,
+      filename,
+      scanResult,
+      avOutput
+    ) <> (constructFile, extractFile.lift)
 }
 
 object FileDataTable {

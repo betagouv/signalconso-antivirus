@@ -1,2 +1,4 @@
 
-GET        /api/test        controllers.AntivirusController.test()
+POST        /api/file/scan                   controllers.AntivirusController.scanAndUpload()
+POST        /api/file/rescan                 controllers.AntivirusController.rescan()
+GET         /api/file/:externalFileId        controllers.AntivirusController.fileStatus(externalFileId :String)
