@@ -9,6 +9,7 @@ import controllers.error.ApiError.FileNameTooLong
 import controllers.error.ApiError.MalformedFileKey
 import controllers.error.ApiError.MissingExternalId
 import controllers.error.AppErrorTransformer.handleError
+import models.ScanCommand
 import play.api.Logger
 import play.api.libs.Files
 import play.api.libs.json.JsError
@@ -47,10 +48,20 @@ class AntivirusController(
           .liftTo[Future](MissingExternalId)
         fileName = filePart.filename
         file     = pathFromFilePart(filePart)
-        _ <- antivirusService.scanAndSave(externalId, fileName, file)
+        _ <- antivirusService.scanFromFile(externalId, fileName, file)
       } yield NoContent
 
       app.recover { case err => handleError(request, err) }
+    }
+
+  def scan() =
+    SecuredAction.async(parse.json) { request =>
+      request.body
+        .validate[ScanCommand]
+        .fold(
+          errors => Future.successful(BadRequest(JsError.toJson(errors))),
+          results => antivirusService.scan(results).map(_ => NoContent)
+        )
     }
 
   def rescan() =
