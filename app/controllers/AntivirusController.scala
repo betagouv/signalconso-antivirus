@@ -67,7 +67,7 @@ class AntivirusController(
   def rescan() =
     SecuredAction.async(parse.json) { request =>
       request.body
-        .validate[List[String]]
+        .validate[List[ScanCommand]]
         .fold(
           errors => Future.successful(BadRequest(JsError.toJson(errors))),
           results => antivirusService.reScanFile(results).map(_ => NoContent)

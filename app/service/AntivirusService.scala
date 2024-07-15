@@ -3,6 +3,7 @@ package service
 import actors.AntivirusScanActor
 import actors.antivirus.AntivirusScanExitCode
 import cats.implicits.catsSyntaxOption
+import cats.implicits.toTraverseOps
 import controllers.error.ApiError.UnknownExternalId
 import models.FileData
 import models.FileId
@@ -46,13 +47,22 @@ class AntivirusService(
       fileData
     }
 
-  def reScanFile(fileExternalIds: List[String]) = fileDataRepository
-    .getByExternalId(fileExternalIds)
-    .map { files =>
-      files
+  def reScanFile(fileExternalIds: List[ScanCommand]) =
+    for {
+      files <- fileDataRepository.getByExternalId(fileExternalIds.map(_.externalId))
+      // Creating missing files
+      _ <- fileExternalIds
+        .filterNot(f => files.contains(f.externalId))
+        .traverse(c =>
+          createFileData(
+            externalId = c.externalId,
+            filename = c.filename
+          )
+        )
+      _ = files
         .filter(f => f.scanResult.isEmpty || f.scanResult.contains(AntivirusScanExitCode.ErrorOccured.value))
         .map(file => antivirusScanActor ! AntivirusScanActor.ScanFromBucket(file))
-    }
+    } yield ()
 
   private def createFileData(externalId: String, filename: String): Future[FileData] = fileDataRepository.create(
     FileData(
