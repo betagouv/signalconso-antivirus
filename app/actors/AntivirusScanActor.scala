@@ -68,7 +68,7 @@ object AntivirusScanActor {
           )
           val filePath = s"${uploadConfiguration.tmpDirectory}/${reportFile.filename}"
           val file     = new File(filePath)
-          context.pipeToSelf(getFile(file, reportFile.filename, filePath)) {
+          context.pipeToSelf(getFile(file, filePath, reportFile.filename)) {
             case Success(_) =>
               ScanFromFile(reportFile, file)
             case Failure(e) =>
