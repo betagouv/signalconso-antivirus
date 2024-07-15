@@ -52,7 +52,7 @@ class AntivirusService(
       files <- fileDataRepository.getByExternalId(fileExternalIds.map(_.externalId))
       // Creating missing files
       _ <- fileExternalIds
-        .filterNot(f => files.contains(f.externalId))
+        .filterNot(f => files.map(_.externalId).contains(f.externalId))
         .traverse(c =>
           createFileData(
             externalId = c.externalId,
