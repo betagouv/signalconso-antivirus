@@ -74,7 +74,7 @@ class AntivirusController(
         )
     }
 
-  def fileStatus(externalFileId: String) = SecuredAction.async(parse.json) { request =>
+  def fileStatus(externalFileId: String) = SecuredAction.async(parse.empty) { request =>
     antivirusService
       .fileStatus(externalFileId)
       .map(fileData => Ok(Json.toJson(fileData)))
