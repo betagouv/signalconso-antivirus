@@ -4,13 +4,16 @@ import actors.AntivirusScanActor
 import actors.antivirus.AntivirusScanExitCode
 import cats.implicits.catsSyntaxOption
 import controllers.error.ApiError.UnknownExternalId
-import models.{FileData, FileId, ScanCommand}
+import models.FileData
+import models.FileId
+import models.ScanCommand
 import org.apache.pekko.actor.typed.ActorRef
 import play.api.Logger
 import repositories.FileDataRepositoryInterface
 
 import java.time.OffsetDateTime
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 class AntivirusService(
     antivirusScanActor: ActorRef[AntivirusScanActor.ScanCommand],

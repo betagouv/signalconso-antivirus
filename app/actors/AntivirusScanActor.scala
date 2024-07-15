@@ -50,6 +50,7 @@ object AntivirusScanActor {
       if (file.exists()) {
         Future.successful(file)
       } else {
+        logger.infoWithTitle("get_file", s"get file $filename on path $filePath")
         s3Service
           .downloadOnCurrentHost(filename, filePath)
           .map(_ => new File(filePath))
