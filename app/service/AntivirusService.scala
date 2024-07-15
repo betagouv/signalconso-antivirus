@@ -79,6 +79,9 @@ class AntivirusService(
     for {
       fileDataOpt <- fileDataRepository.getByExternalId(List(externalFileId)).map(_.headOption)
       fileData    <- fileDataOpt.liftTo[Future](UnknownExternalId(externalFileId))
-    } yield fileData
+      status = fileData.scanResult.filter(i =>
+        i == AntivirusScanExitCode.VirusFound.value || i == AntivirusScanExitCode.NoVirusFound.value
+      )
+    } yield fileData.copy(scanResult = status)
 
 }
