@@ -10,7 +10,7 @@ object Dependencies {
     lazy val pekkoHttpVersion          = "1.0.1"
     lazy val pekkoVersion              = "1.0.2"
     lazy val enumeratumVersion         = "1.8.0"
-    lazy val sentryVersion             = "6.34.0"
+    lazy val sentryVersion             = "7.12.0"
     lazy val jbcrypt                   = "0.4"
     lazy val specs2MatcherExtraVersion = "4.20.6"
     lazy val scalaCheckVersion         = "1.18.0"
@@ -42,7 +42,8 @@ object Dependencies {
     val flywayPostgres = "org.flywaydb" % "flyway-database-postgresql" % Versions.flyWayVersion
     val janino = "org.codehaus.janino" % "janino" % Versions.janino // Needed for the <if> in logback conf
     val logstashLogBackEncoder = "net.logstash.logback"   % "logstash-logback-encoder" % Versions.logstashLogbackEncoder
-    val sentry                 = "io.sentry"              % "sentry-logback"           % Versions.sentryVersion
+    val sentryLogback          = "io.sentry"              % "sentry-logback"           % Versions.sentryVersion
+    val sentryCore             = "io.sentry"              % "sentry"                   % Versions.sentryVersion
     val catsCore               = "org.typelevel"         %% "cats-core"                % Versions.catsCoreVersion
     val pureConfig             = "com.github.pureconfig" %% "pureconfig"               % Versions.pureConfigVersion
     val playSlick              = "org.playframework"     %% "play-slick"               % Versions.playSlickVersion
@@ -63,7 +64,8 @@ object Dependencies {
   val AppDependencies = Seq(
     Compile.janino,
     Compile.logstashLogBackEncoder,
-    Compile.sentry,
+    Compile.sentryLogback,
+    Compile.sentryCore,
     Compile.catsCore,
     Compile.pureConfig,
     Compile.playSlick,
