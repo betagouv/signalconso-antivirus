@@ -58,8 +58,6 @@ class S3Service(implicit
     downloadFromBucket(bucketKey).runWith(FileIO.toPath(Path.of(filePath)))
 
   def downloadFromBucket(bucketKey: String): Source[ByteString, Future[ObjectMetadata]] = {
-    println(s"------------------ bucketName = ${bucketName} ------------------")
-    println(s"------------------ bucketKey = ${bucketKey} ------------------")
     pekkoS3Client
       .getObject(bucketName, bucketKey)
   }
