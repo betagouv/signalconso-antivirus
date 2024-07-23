@@ -55,11 +55,8 @@
     <logger name="config" level="${LOG_LEVEL:-DEBUG}"/>
     <logger name="controllers" level="${LOG_LEVEL:-DEBUG}"/>
     <logger name="loader" level="${LOG_LEVEL:-DEBUG}"/>
-    <logger name="orchestrators" level="${LOG_LEVEL:-DEBUG}"/>
     <logger name="repositories" level="${LOG_LEVEL:-DEBUG}"/>
-    <logger name="services" level="${LOG_LEVEL:-DEBUG}"/>
-    <logger name="tasks" level="${LOG_LEVEL:-DEBUG}"/>
-    <logger name="utils" level="${LOG_LEVEL:-DEBUG}"/>
+    <logger name="service" level="${LOG_LEVEL:-DEBUG}"/>
 <!--    <logger name="com.zaxxer.hikari.HikariConfig" level="DEBUG"/>-->
 <!--    <logger name="com.zaxxer.hikari" level="TRACE"/>-->
 
