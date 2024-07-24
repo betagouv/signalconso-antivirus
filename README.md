@@ -2,6 +2,8 @@
 
 Api qui permet de scanner les piéces jointes des utilisateurs de signal conso.
 
+Signal conso doit fonctionner même lorsque l'antivirus est indisponible, cependant le téléchargement des piéces jointes par les pros et agents sera bloqué si la piéce jointe n'a pas été scannée.
+
 Plus d'information ici : https://beta.gouv.fr/startup/signalement.html
 
 L'API nécessite une base PostgreSQL pour la persistence des données (versions supportées : 14+).
@@ -49,6 +51,8 @@ docker-compose -f scripts/local/docker-compose.yml up
 
 ```
 
+L'application utilise un schéma différent de celui de l'api principale signal conso et ne doit pas partager la même base de données.
+
 #### Script de migration
 
 Le projet utilise l'outil flyway (https://flywaydb.org/) pour la gestion des scripts de migration.
@@ -63,8 +67,6 @@ Ceci afin de ne pas avoir gérer de procédure de rollback complexe :
 Avoir l'ancienne la structure de données et la nouvelle qui fonctionnent en parralèle puis un certain temps après supprimer l'ancienne structure.
 
 Cette méthode est recommandée par flyway et est décrite sur le lien suivant : https://documentation.red-gate.com/fd/rollback-guidance-138347143.html
-
-
 
 
 
