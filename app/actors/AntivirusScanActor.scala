@@ -22,8 +22,8 @@ import scala.util.Failure
 import scala.util.Success
 object AntivirusScanActor {
   sealed trait ScanCommand
-  final case class ScanFromFile(reportFile: FileData, file: java.io.File)           extends ScanCommand
-  final case object ScanFromFileSuccess                                             extends ScanCommand
+  final case class ScanFromFile(fileData: FileData, file: java.io.File)             extends ScanCommand
+  final case class ScanFromFileSuccess(fileData: FileData)                          extends ScanCommand
   final case class ScanFromFileFailed(throwable: Throwable)                         extends ScanCommand
   final case class ScanFromBucket(reportFile: FileData)                             extends ScanCommand
   final case class ScanFromBucketFailed(reportFile: FileData, throwable: Throwable) extends ScanCommand
@@ -61,33 +61,33 @@ object AntivirusScanActor {
         context.system.dispatchers.lookup(DispatcherSelector.fromConfig("my-blocking-dispatcher"))
 
       Behaviors.receiveMessage[ScanCommand] {
-        case ScanFromBucket(reportFile: FileData) =>
-          logger.warnWithTitle(
-            "scan_rescanning_file",
-            s"Rescanning file ${reportFile.id.value} : ${reportFile.filename}"
+        case ScanFromBucket(fileData: FileData) =>
+          logger.infoWithTitle(
+            "scan_file",
+            s"scanning file ${fileData.id.value} : ${fileData.filename}"
           )
-          val filePath = s"${uploadConfiguration.tmpDirectory}/${reportFile.filename}"
+          val filePath = s"${uploadConfiguration.tmpDirectory}/${fileData.filename}"
           val file     = new File(filePath)
-          context.pipeToSelf(getFile(file, filePath, reportFile.filename)) {
+          context.pipeToSelf(getFile(file, filePath, fileData.filename)) {
             case Success(_) =>
-              ScanFromFile(reportFile, file)
+              ScanFromFile(fileData, file)
             case Failure(e) =>
-              ScanFromBucketFailed(reportFile, e)
+              ScanFromBucketFailed(fileData, e)
           }
           Behaviors.same
 
         case ScanFromBucketFailed(reportFile: FileData, throwable: Throwable) =>
-          logger.warnWithTitle(
-            "scan_rescanning_file_failed",
-            s"failed to scan from bucket ${reportFile.filename}",
+          logger.errorWithTitle(
+            "scan_file_bucket_failure",
+            s"Failed to get file from bucket ${reportFile.filename}",
             throwable
           )
           Behaviors.same
 
-        case ScanFromFile(reportFile: FileData, file: java.io.File) =>
-          val filePath = s"${uploadConfiguration.tmpDirectory}/${reportFile.filename}"
+        case ScanFromFile(fileData: FileData, file: java.io.File) =>
+          val filePath = s"${uploadConfiguration.tmpDirectory}/${fileData.filename}"
           val result = for {
-            existingFile <- getFile(file, reportFile.filename, filePath)
+            existingFile <- getFile(file, fileData.filename, filePath)
             _ = logger.debug("Begin Antivirus scan.")
             antivirusScanResult <- performAntivirusScan(existingFile)
             _ = logger.debug(
@@ -95,12 +95,16 @@ object AntivirusScanActor {
             )
             _ = antivirusScanResult.exitCode.map(_.value)
             _ <- reportFileRepository.setScanResult(
-              reportFile.id,
+              fileData.id,
               antivirusScanResult.exitCode.map(_.value),
               antivirusScanResult.output
             )
             _ <- antivirusScanResult.exitCode match {
               case Some(NoVirusFound) | None =>
+                logger.infoWithTitle(
+                  "scan_no_virus",
+                  s"scanning file success ${fileData.id.value} : ${fileData.filename}"
+                )
                 logger.debug("Deleting file.")
                 Future.successful(existingFile.delete())
               case Some(VirusFound) =>
@@ -110,7 +114,7 @@ object AntivirusScanActor {
                 )
                 logger.debug(s"File has been deleted by Antivirus, removing file from S3")
                 s3Service
-                  .delete(reportFile.filename)
+                  .delete(fileData.filename)
               case Some(ErrorOccured) =>
                 logger.errorWithTitle(
                   "scan_unexpected_error",
@@ -121,17 +125,20 @@ object AntivirusScanActor {
           } yield Done
 
           context.pipeToSelf(result) {
-            case Success(_) => ScanFromFileSuccess
+            case Success(_) => ScanFromFileSuccess(fileData)
             case Failure(e) => ScanFromFileFailed(e)
           }
 
           Behaviors.same
 
-        case ScanFromFileSuccess =>
-          logger.debug("Scan from file succeeded")
+        case ScanFromFileSuccess(fileData) =>
+          logger.infoWithTitle(
+            "scan_file_done",
+            s"scanning file success ${fileData.id.value} : ${fileData.filename}"
+          )
           Behaviors.same
         case ScanFromFileFailed(e) =>
-          logger.warnWithTitle("scan_from_file_failed", s"Scan from file failed", e)
+          logger.warnWithTitle("scan_attempt_failed", s"Antivirus has not been called properly", e)
           Behaviors.same
       }
     }
