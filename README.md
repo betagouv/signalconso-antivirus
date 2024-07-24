@@ -12,25 +12,26 @@ Le build se fait à l'aide de [SBT](https://www.scala-sbt.org/) (voir [build.sbt
 
 ### Variables d'environnement
 
-| Nom                                   | Description                                                                                                                                                     | Valeur par défaut                |
-|:--------------------------------------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------|:---------------------------------|
-| APPLICATION_SECRET                    | Clé secrète de l'application                                                                                                                                    |                                  |
-| SENTRY_DSN                            | Identifiant pour intégration avec [Sentry](https://sentry.io)                                                                                                   |                                  |
-| TMP_DIR                               | Dossier temporaire qui sert de tampon pour la génération des fichiers / import de fichiers                                                                      |                                  |
-| POSTGRESQL_ADDON_URI                  | Full database url                                                                                                                                               |                                  |
-| POSTGRESQL_ADDON_HOST                 | Database host                                                                                                                                                   |                                  |
-| POSTGRESQL_ADDON_PORT                 | Database port                                                                                                                                                   |                                  |
-| POSTGRESQL_ADDON_DB                   | Database name                                                                                                                                                   |                                  |
-| POSTGRESQL_ADDON_USER                 | Database user                                                                                                                                                   |                                  |
-| POSTGRESQL_ADDON_PASSWORD             | Database password                                                                                                                                               |                                  |
-| MAX_CONNECTIONS                       | Max connection (hikari property)                                                                                                                                |                                  |
-| NUM_THREADS                           | Thread count used to process db connections (hikari property)                                                                                                   |                                  |
-| AUTHENTICATION_TOKEN                  | Client Authentication token used to call the apis                                                                                                               | false                            |
-| S3_ACCESS_KEY_ID                      | ID du compte S3 utilisé                                                                                                                                         |                                  |
-| S3_SECRET_ACCESS_KEY                  | SECRET du compte S3 utilisé                                                                                                                                     |                                  |
-| S3_ENDPOINT_URL                       | host du bucket                                                                                                                                                  |                                  |
-| BUCKETS_REPORT                        | nom du bucket                                                                                                                                                   |                                  |
-| USE_TEXT_LOGS                         | Si true, les logs seront au format texte (plus lisible pour travailler en local) plutôt que JSON (qui est le format en prod, pour que New Relic les parse bien) |                                  |
+| Nom                                 | Description                                                                                                                                                     | Valeur par défaut |
+|:------------------------------------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------|:------------------|
+| APPLICATION_SECRET                  | Clé secrète de l'application                                                                                                                                    |                   |
+| SENTRY_DSN                          | Identifiant pour intégration avec [Sentry](https://sentry.io)                                                                                                   |                   |
+| TMP_DIR                             | Dossier temporaire qui sert de tampon pour la génération des fichiers / import de fichiers                                                                      |                   |
+| POSTGRESQL_ADDON_URI                | Full database url                                                                                                                                               |                   |
+| POSTGRESQL_ADDON_HOST               | Database host                                                                                                                                                   |                   |
+| POSTGRESQL_ADDON_PORT               | Database port                                                                                                                                                   |                   |
+| POSTGRESQL_ADDON_DB                 | Database name                                                                                                                                                   |                   |
+| POSTGRESQL_ADDON_USER               | Database user                                                                                                                                                   |                   |
+| POSTGRESQL_ADDON_PASSWORD           | Database password                                                                                                                                               |                   |
+| MAX_CONNECTIONS                     | Max connection (hikari property)                                                                                                                                |                   |
+| NUM_THREADS                         | Thread count used to process db connections (hikari property)                                                                                                   |                   |
+| AUTHENTICATION_TOKEN                | Client Authentication token used to call the apis                                                                                                               | false             |
+| S3_ACCESS_KEY_ID                    | ID du compte S3 utilisé                                                                                                                                         |                   |
+| S3_SECRET_ACCESS_KEY                | SECRET du compte S3 utilisé                                                                                                                                     |                   |
+| S3_ENDPOINT_URL                     | host du bucket                                                                                                                                                  |                   |
+| BUCKETS_REPORT                      | nom du bucket                                                                                                                                                   |                   |
+| CC_CLAMAV                           | Flag activation antivirus sur la machine clever cloud (minimum 2Go de ram), obligatoire pour le bon fonctionnement du service                                   | true              |
+| USE_TEXT_LOGS                       | Si true, les logs seront au format texte (plus lisible pour travailler en local) plutôt que JSON (qui est le format en prod, pour que New Relic les parse bien) |                   |
 
 # Développement
 
