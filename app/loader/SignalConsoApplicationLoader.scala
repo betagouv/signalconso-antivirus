@@ -100,6 +100,7 @@ class SignalConsoComponents(
   lazy val router: Router =
     new _root_.router.Routes(
       httpErrorHandler,
+      new HealthController(controllerComponents),
       antivirusController
     )
 
