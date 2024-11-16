@@ -5,27 +5,24 @@ import sbt._
 object Dependencies {
   object Versions {
 
-    lazy val playSlickVersion          = "6.1.0"
+    lazy val playSlickVersion          = "6.1.1"
     lazy val slickPgVersion            = "0.22.2"
     lazy val pekkoHttpVersion          = "1.0.1"
     lazy val pekkoVersion              = "1.0.2"
-    lazy val enumeratumVersion         = "1.8.0"
-    lazy val sentryVersion             = "7.12.0"
+    lazy val enumeratumVersion         = "1.8.2"
+    lazy val sentryVersion             = "7.17.0"
     lazy val jbcrypt                   = "0.4"
-    lazy val specs2MatcherExtraVersion = "4.20.6"
-    lazy val scalaCheckVersion         = "1.18.0"
+    lazy val specs2MatcherExtraVersion = "4.20.9"
+    lazy val scalaCheckVersion         = "1.18.1"
     lazy val catsCoreVersion           = "2.12.0"
-    lazy val pureConfigVersion         = "0.17.6"
+    lazy val pureConfigVersion         = "0.17.7"
     lazy val awsJavaSdkS3Version       = "1.12.736"
-    lazy val jacksonModuleScalaVersion = "2.17.1"
-    lazy val postgresqlVersion         = "42.7.3"
+    lazy val jacksonModuleScalaVersion = "2.18.1"
+    lazy val postgresqlVersion         = "42.7.4"
     lazy val refinedVersion            = "0.11.2"
-    lazy val flyWayVersion             = "10.14.0"
+    lazy val flyWayVersion             = "10.21.0"
     lazy val janino                    = "3.1.12"
-    // Cannot be updated to "7.4" because of the following error when logging as JSON:
-    // java.lang.NoSuchMethodError: 'java.time.Instant ch.qos.logback.classic.spi.ILoggingEvent.getInstant()'
-    // If we want to upgrade, we MUST check json logs (env var USE_TEXT_LOGS set to false) to see if this error still happen
-    lazy val logstashLogbackEncoder = "7.3"
+    lazy val logstashLogbackEncoder = "8.0"
 
   }
 
