@@ -3,11 +3,27 @@ import org.typelevel.scalacoptions.ScalacOptions
 name         := "signalement-antivirus"
 organization := "fr.gouv.beta"
 
-version := "1.3.13"
+version := "1.3.14"
 
 scalaVersion := "2.13.14"
 
-lazy val `signalement-antivirus` = (project in file(".")).enablePlugins(PlayScala)
+lazy val `signalement-antivirus` = (project in file(".")).enablePlugins(PlayScala).enablePlugins(BuildInfoPlugin)
+
+// Commit hash: COMMIT_ID is provided at build time, fallback to local git
+lazy val gitCommit: String =
+  sys.env
+    .get("COMMIT_ID")
+    .orElse(scala.util.Try(scala.sys.process.Process("git rev-parse HEAD").!!.trim).toOption)
+    .filter(_.nonEmpty)
+    .getOrElse("unknown")
+
+buildInfoKeys := Seq[BuildInfoKey](
+  name,
+  version,
+  BuildInfoKey.action("gitCommit")(gitCommit),
+  BuildInfoKey.action("buildTime")(java.time.Instant.now().toString)
+)
+buildInfoPackage := "buildinfo"
 
 libraryDependencies ++= Seq(
   ws,
